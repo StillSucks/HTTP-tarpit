@@ -3,6 +3,12 @@ log_format tarpitLog '$remote_addr - $remote_user [$time_local] in $request_time
 	'"$request" $status $bytes_sent '
 	'"$http_referer" "$http_user_agent" "$gzip_ratio"';
 
+upstream tarpit-local {
+    server localhost:8080;
+    server localhost:8081;
+    server localhost:8082;
+}
+
 server {
 	listen [::]:80;
 	listen 80;
@@ -23,7 +29,7 @@ server {
 		access_log /var/log/nginx/tarpit.log tarpitLog;
 
                 proxy_buffering off;
-                proxy_pass http://localhost:8080 ;
+                proxy_pass http://tarpit-local ;
         }
 
 	################################
@@ -33,7 +39,7 @@ server {
 	#location / {
 	#	access_log /var/log/nginx/tarpit.log tarpitLog;
 	#
-	#	proxy_pass http://localhost:8080 ;
+	#	proxy_pass http://tarpit-local ;
 	#}
 	#
 	#location = / {
