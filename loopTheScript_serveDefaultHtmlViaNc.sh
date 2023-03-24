@@ -6,6 +6,8 @@ delay=60
 usedPorts="8080 8081 8082"
 nginxFile="./nginx-defaultsite"
 # nginxFile="/etc/nginx/sites-enabled/default"
+# These HTTP client-headers are uninteresting and should not be included in basic output
+uselessHttpRequestHeaders="Connection|Accept|Accept-Language|Accept-Encoding|Upgrade-Insecure-Requests|Sec-Fetch-Dest|Sec-Fetch-Mode|Sec-Fetch-Site|If-Modified-Since|If-None-Match"
 
 ## Dependant variables
 # Subordinate script, that manages netcat, pv (slow data streaming), and the HTTP-response headers
@@ -24,7 +26,8 @@ secondaryScript="./serveDefaultHtmlViaNc.sh"
 # create a self-looping worker for each port
 for port in $usedPorts ; do
     while /bin/true ; do
-        timeout "$delay" bash "$secondaryScript" "$port" "$((delay - 2))"
+        timeout "$delay" bash "$secondaryScript" "$port" "$((delay - 2))" \
+            | grep -Ev "($uselessHttpRequestHeaders): "
     done &
 
     # create an offset to prohibit simultaneous timeouts
