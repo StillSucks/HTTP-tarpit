@@ -1,0 +1,12 @@
+[Unit]
+Description = Slowly serve static html on multiple localhost ports
+After = network.target
+
+[Service]
+User=www-data
+WorkingDirectory = /path/to/working/directory
+Type = forking
+ExecStart = bash ./loopTheScript_serveDefaultHtmlViaNc.sh
+
+[Install]
+WantedBy = default.target

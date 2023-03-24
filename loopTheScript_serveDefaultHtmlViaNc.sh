@@ -33,3 +33,7 @@ for port in $usedPorts ; do
     # create an offset to prohibit simultaneous timeouts
     sleep 1
 done
+
+# Overwrite the 'exit code' of this script (Neccessary as for systemd)
+#    'while' has no exit code and the last statement (string comparisson) will always be false
+true
