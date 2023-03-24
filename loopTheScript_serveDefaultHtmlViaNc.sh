@@ -21,7 +21,7 @@
 delay=60
 # The variable $usedPorts may be overwritten by the contents of $nginxFile
 usedPorts="8080 8081 8082"
-nginxFile="./nginx-defaultsite"
+nginxFile="./exemplary_nginx-defaultsite"
 # nginxFile="/etc/nginx/sites-enabled/default"
 # These HTTP client-headers are uninteresting and should not be included in basic output
 uselessHttpRequestHeaders="Connection|Accept|Accept-Language|Accept-Encoding|Upgrade-Insecure-Requests|Sec-Fetch-Dest|Sec-Fetch-Mode|Sec-Fetch-Site|If-Modified-Since|If-None-Match"
