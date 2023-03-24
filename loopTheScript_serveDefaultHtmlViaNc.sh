@@ -1,14 +1,7 @@
 #!/bin/sh
 #
-# This script starts an independant background process for each $usedPorts.
-# These initiate the secondary script (containing the port reservation via netcat/nc).
-#     The secondary script slowly streams content into nc according to the $((delay - 2)) duration.
-# If a client is connecting to the reverse proxy, the proxy tries to foreward data from a local upstream sources.
-#     If no request has been forewarded, the timeout quits the process and the while-loop initializes a new instance.
-#     As the clients continually receive data, usual (connection-)timeouts are not hit.
-#     Currently, the data is buffered by the reverse-proxy and split into its defined data sizes.
 # Clients usually connect within X seconds after the timeout cycle of a choosen worker.
-#     Therefore they experience an actual delay of (($delay - X)) seconds [maximum: ((delay -2))].
+#     Therefore they experience an actual delay of (($delay - X)) seconds [maximum: (($delay -2))].
 #
 # Complication (the last part I'm not sure about):
 # The higher the $delay, the more ports ($usedPorts) you might need.
