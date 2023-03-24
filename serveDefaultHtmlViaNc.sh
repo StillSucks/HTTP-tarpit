@@ -1,18 +1,24 @@
 #!/bin/sh
 #
-# usage: $0 [port]
+# usage: $0 [port] [duration]
 #    port (optional): registered localhost port for serving content
+#    duration (optional, requires port): time which the content should be streched across
 #
 
 # default values
 outputFile="./default.html"
 port="8080"
+# outputDuration="50"
+bytesPerSecond="220"
 
 # ports below 1024 require elevated privileges
 [ "$#" -gt 0 ] && [ "$1" -gt 1023 ] && port="$1"
+[ "$#" -gt 1 ] && [ "$2" -gt 1 ] && outputDuration="$2"
 
 contentLength=$(du -b "$outputFile" | cut -f1)
 timestamp=$(date +'%a, %d %b %Y %H:%M:%S GMT')
+# if outputDuration is not empty, override bytesPerSecond
+[ -n "$outputDuration" ] && bytesPerSecond=$(echo "$contentLength / $outputDuration" | bc)
 
 # pipe mock-up nginx headers and actual file into nc
 (
@@ -24,5 +30,5 @@ Content-Length: $contentLength
 Connection: keep-alive
 "
 
-cat "$outputFile"
+pv -L "$bytesPerSecond" -q "$outputFile"
 ) | nc -l localhost "$port"
