@@ -1,0 +1,51 @@
+# in case we want to track the actual request duration (via nginx $request_time)
+log_format tarpitLog '$remote_addr - $remote_user [$time_local] in $request_time sec '
+	'"$request" $status $bytes_sent '
+	'"$http_referer" "$http_user_agent" "$gzip_ratio"';
+
+server {
+	listen [::]:80;
+	listen 80;
+	root /var/www/html;
+
+	index index.html index.htm index.nginx-debian.html;
+	server_name _;
+
+	################################
+	## I) blacklist version (deny by defined locations)
+	################################
+
+	location / {
+		try_files $uri $uri/ $uri.html =404;
+	}
+
+        location ~ \.(php|aspx|py) {
+		access_log /var/log/nginx/tarpit.log tarpitLog;
+
+                proxy_buffering off;
+                proxy_pass http://localhost:8080 ;
+        }
+
+	################################
+	## II) whitelist version (deny by default)
+	################################
+
+	#location / {
+	#	access_log /var/log/nginx/tarpit.log tarpitLog;
+	#
+	#	proxy_pass http://localhost:8080 ;
+	#}
+	#
+	#location = / {
+	#	try_files $uri $uri/ $uri.html =404;
+	#}
+	#
+	#location ~ ^(allowed|paths)$ {
+	#	try_files $uri $uri/ $uri.html =404;
+	#}
+
+	################################
+
+	# optional: map errors (e.g. non-existing paths) to a location that hit a tarpit-location
+	# error_page 400 404 /thisWillBePassedToProxy.php;
+}
