@@ -20,6 +20,10 @@ The easiest way to use this PoC, is the following setup:
 1. Login to a (new) (Ubuntu) Linux Server
 2. Install nginx (netcat should be installed by default)
 3. Change `WorkingDirectory` variable in `exemplary_httptarpit.service` to an absolute path of this directory
+    ```
+    escapedPWD=$(echo "$PWD" | sed 's/\//\\\//g')
+    sed -Ei "s/(WorkingDirectory\s*=\s*)[\w\/\.]+/\1$escapedPWD/" exemplary_httptarpit.service
+    ```
 4. Make .sh files executeable by user `` from `exemplary_httptarpit.service`
     ```
     chown www-data serveDefaultHtmlViaNc.sh loopTheScript_serveDefaultHtmlViaNc.sh
