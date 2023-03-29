@@ -1,6 +1,7 @@
-# HTTP-tarpit, a proof-of-concept
+# HTTP-tarpit, a minimal version
 
 Inspired by other 'tarpit' projects, this is an example on how to establish a HTTP tarpit (optionally with nginx).
+In contrast to existing projects, this variant does not require any programming language.
 
 ## Conceptual Idea
 The basis of this approach is piping `pv` into `nc` (netcat), which allows a custom 'response speed' to a HTTP request.  
