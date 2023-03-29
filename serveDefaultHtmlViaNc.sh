@@ -10,8 +10,8 @@ outputHeading="./HttpOutput/_heading.html"
 outputContent="./HttpOutput/content.html"
 outputClosure="./HttpOutput/_closure.html"
 port="8080"
-# outputDuration="50"
-bytesPerSecond="220"
+bytesPerSecondMIN="200"
+bytesPerSecond="$((bytesPerSecondMIN * 11/10))"
 timestamp=$(date +'%a, %d %b %Y %H:%M:%S GMT')
 
 # ports below 1024 require elevated privileges
@@ -21,8 +21,17 @@ timestamp=$(date +'%a, %d %b %Y %H:%M:%S GMT')
 [ -r "$outputHeading" ] && [ -r "$outputContent" ] && [ -r "$outputClosure" ] || exit 1
 contentLength=$(du -cb "$outputHeading" "$outputContent" "$outputClosure" | grep -i "total" | cut -f1)
 
-# if outputDuration is not empty, override bytesPerSecond
-[ -n "$outputDuration" ] && bytesPerSecond=$(echo "$contentLength / $outputDuration" | bc)
+printContent_NTimes=1
+# if outputDuration is set, check if content needs to be repeated and adapt bytesPerSecond
+if [ -n "$outputDuration" ] ; then
+  contentFileLength=$(du -b "$outputContent" | cut -f1)
+  while [ "$((contentLength / outputDuration))" -lt "$bytesPerSecondMIN" ] ; do
+    contentLength=$((contentLength + contentFileLength))
+    printContent_NTimes=$((printContent_NTimes + 1))
+  done
+  # '1+' prohibits the default downwards-rounding
+  bytesPerSecond=$((1 + (contentLength / outputDuration)))
+fi
 
 # pipe mock-up nginx headers and actual files into nc
 (
@@ -33,6 +42,9 @@ Content-Type: text/html; charset=UTF-8
 Content-Length: $contentLength
 Connection: keep-alive
 "
-
-pv -q -L "$bytesPerSecond" "$outputHeading" "$outputContent" "$outputClosure"
+pv -q -L "$bytesPerSecond" "$outputHeading"
+for ((i=0 ; i < $printContent_NTimes ; ++i)) ; do
+  pv -q -L "$bytesPerSecond" "$outputContent"
+done
+pv -q -L "$bytesPerSecond" "$outputClosure"
 ) | nc -l localhost "$port"
