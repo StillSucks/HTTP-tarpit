@@ -1,5 +1,6 @@
 [Unit]
 Description = Slowly serve static html on multiple localhost ports
+Requires = nginx.service
 After = network.target
 
 [Service]
