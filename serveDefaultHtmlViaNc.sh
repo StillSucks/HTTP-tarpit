@@ -5,14 +5,16 @@
 #    duration (optional, requires port): time which the content should be streched across
 #
 
-# default values
+# constants
+timestamp=$(date +'%a, %d %b %Y %H:%M:%S GMT')
+bytesPerSecondMIN="200"
 outputHeading="./HttpOutput/_heading.html"
 outputContent="./HttpOutput/content.html"
 outputClosure="./HttpOutput/_closure.html"
-port="8080"
-bytesPerSecondMIN="200"
+
+# default values
 bytesPerSecond="$((bytesPerSecondMIN * 11/10))"
-timestamp=$(date +'%a, %d %b %Y %H:%M:%S GMT')
+port="8080"
 
 # ports below 1024 require elevated privileges
 [ "$#" -gt 0 ] && [ "$1" -gt 1023 ] && port="$1"
