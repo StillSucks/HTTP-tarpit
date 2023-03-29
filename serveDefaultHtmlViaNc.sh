@@ -12,6 +12,7 @@ outputClosure="./HttpOutput/_closure.html"
 port="8080"
 # outputDuration="50"
 bytesPerSecond="220"
+timestamp=$(date +'%a, %d %b %Y %H:%M:%S GMT')
 
 # ports below 1024 require elevated privileges
 [ "$#" -gt 0 ] && [ "$1" -gt 1023 ] && port="$1"
@@ -20,7 +21,6 @@ bytesPerSecond="220"
 [ -r "$outputHeading" ] && [ -r "$outputContent" ] && [ -r "$outputClosure" ] || exit 1
 contentLength=$(du -cb "$outputHeading" "$outputContent" "$outputClosure" | grep -i "total" | cut -f1)
 
-timestamp=$(date +'%a, %d %b %Y %H:%M:%S GMT')
 # if outputDuration is not empty, override bytesPerSecond
 [ -n "$outputDuration" ] && bytesPerSecond=$(echo "$contentLength / $outputDuration" | bc)
 
