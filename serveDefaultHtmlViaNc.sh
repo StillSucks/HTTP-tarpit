@@ -6,7 +6,9 @@
 #
 
 # default values
-outputFile="./default.html"
+outputHeading="./HttpOutput/_heading.html"
+outputContent="./HttpOutput/content.html"
+outputClosure="./HttpOutput/_closure.html"
 port="8080"
 # outputDuration="50"
 bytesPerSecond="220"
@@ -15,12 +17,14 @@ bytesPerSecond="220"
 [ "$#" -gt 0 ] && [ "$1" -gt 1023 ] && port="$1"
 [ "$#" -gt 1 ] && [ "$2" -gt 1 ] && outputDuration="$2"
 
-contentLength=$(du -b "$outputFile" | cut -f1)
+[ -r "$outputHeading" ] && [ -r "$outputContent" ] && [ -r "$outputClosure" ] || exit 1
+contentLength=$(du -cb "$outputHeading" "$outputContent" "$outputClosure" | grep -i "total" | cut -f1)
+
 timestamp=$(date +'%a, %d %b %Y %H:%M:%S GMT')
 # if outputDuration is not empty, override bytesPerSecond
 [ -n "$outputDuration" ] && bytesPerSecond=$(echo "$contentLength / $outputDuration" | bc)
 
-# pipe mock-up nginx headers and actual file into nc
+# pipe mock-up nginx headers and actual files into nc
 (
 echo "HTTP/1.1 200 OK
 Server: nginx/1.18.0 (Ubuntu)
@@ -30,5 +34,5 @@ Content-Length: $contentLength
 Connection: keep-alive
 "
 
-pv -L "$bytesPerSecond" -q "$outputFile"
+pv -q -L "$bytesPerSecond" "$outputHeading" "$outputContent" "$outputClosure"
 ) | nc -l localhost "$port"
