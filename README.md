@@ -34,7 +34,7 @@ The easiest way to use this PoC, is the following setup:
     ```
     mv /etc/nginx/sites-available/default /etc/nginx/sites-available/default.bak
     cp exemplary_nginx-defaultsite /etc/nginx/sites-available/default
-    cp exemplary_httptarpit.service /usr/lib/systemd/system/httptarpit.service
+    cp exemplary_httptarpit.service /etc/systemd/system/httptarpit.service
     ```
 6. Reload the systemd daemon (to detect httptarpit.service)
     ```
